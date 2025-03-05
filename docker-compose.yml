@@ -1,0 +1,27 @@
+services:
+  db:
+    build:
+      context: ./db
+      dockerfile: mysql.Dockerfile
+    container_name: mysql-c
+    environment:
+      MYSQL_ROOT_PASSWORD: '123'
+    volumes:
+      - "./db:/docker-entrypoint-initdb.d" # init sql
+    expose:
+    - "3306"
+    ports:
+      - "3306:3306"
+    restart: no
+  node:
+    build:
+      context: ./node
+      dockerfile: node.Dockerfile
+    container_name: node-c
+    volumes:
+      - "./node/src:/usr/src/app"
+    ports:
+      - 3000:3000
+    depends_on:
+      - db
+    restart: always # Keeps trying until mySQL server is done starting, its gonna fail a couple times until then...
